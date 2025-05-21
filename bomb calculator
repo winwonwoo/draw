@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>알뜰 요금제 초과 요금 계산기</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    label, select, input {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>알뜰 요금제 초과 요금 계산기</h2>
+
+  <label>1. 오늘은 며칠인가요? (1~31)
+    <input type="number" id="day" min="1" max="31">
+  </label>
+
+  <label>2. 기본 제공 데이터량은 몇 GB인가요?
+    <input type="number" id="baseData" step="0.01">
+  </label>
+
+  <label>3. 오늘까지 쓴 데이터는 몇 GB 인가요?
+    <input type="number" id="usedData" step="0.01">
+  </label>
+
+  <label>4. 프로모션 할인 적용된 기존 요금(VAT 포함가)은 얼마였나요?
+    <input type="number" id="originalPrice" step="1">
+  </label>
+
+  <label>5. 당신이 사용하던 통신사는?
+    <select id="carrier">
+      <option value="A">A. KT계 알뜰 통신사</option>
+      <option value="B">B. SKT계 알뜰 통신사</option>
+      <option value="C">C. LG U+계 알뜰 통신사</option>
+    </select>
+  </label>
+
+  <button onclick="calculate()">계산하기</button>
+
+  <div id="result"></div>
+
+  <script>
+    function calculate() {
+      const day = parseFloat(document.getElementById("day").value);
+      const baseData = parseFloat(document.getElementById("baseData").value);
+      const usedData = parseFloat(document.getElementById("usedData").value);
+      const originalPrice = parseFloat(document.getElementById("originalPrice").value);
+      const carrier = document.getElementById("carrier").value;
+
+      if (isNaN(day) || isNaN(baseData) || isNaN(usedData) || isNaN(originalPrice)) {
+        document.getElementById("result").innerText = "모든 값을 정확히 입력해주세요.";
+        return;
+      }
+
+      let rate;
+
+      if (carrier === "A") {
+        rate = 22.53;
+      } else if (carrier === "B") {
+        rate = 22.5;
+      } else if (carrier === "C") {
+        rate = originalPrice * (day / 30);
+      }
+
+      const allowedData = baseData * (day / 30);
+      const excessData = usedData - allowedData;
+
+      let result;
+
+      if (excessData <= 0) {
+        result = 0;
+      } else {
+        result = excessData * rate * 1000;
+      }
+
+      document.getElementById("result").innerText = `당신이 추가 납부해야 할 요금 폭탄은... ${Math.round(result)}원 입니다`;
+    }
+  </script>
+</body>
+</html>
